@@ -101,7 +101,9 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
+        value =  self.hash_array[self.hash_index(key)]
+        if value == None:
+            print ("key is not fund")
         self.hash_array[self.hash_index(key)] = None
 
 
