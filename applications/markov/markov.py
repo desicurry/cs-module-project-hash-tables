@@ -6,55 +6,48 @@ with open("input.txt") as f:
 
 # TODO: analyze which words can follow other words
 # Your code here
-words = words.split()
-
-this_that = dict()
-
-for i in range(len(words)-1):
-    word = words[i]
-    if words[i] not in this_that:
-        this_that[word] = []
-        this_that[word].append(words[i + 1])
-
+nextWordDict = {}
+wordList = words.split()
+for (i, word) in enumerate(wordList[:-1]):
+    if word in nextWordDict:
+        nextWordDict[word].append(wordList[i + 1])
     else:
-        this_that[word].append(words[i + 1])
-
-startwords = []
-stopwords = []
-stoppunct = ['.', '?', '!']
-stopquote = ['."', '?"', '!"']
-
-startwords = []
-stopwords = []
-stoppunct = ['.', '?', '!']
-stopquote = ['."', '?"', '!"']
-
-for word in words:
-    if word[0].isupper():
-        startwords.append(word)
-
-    if word[0] == '"' and word[1].isupper():
-        startwords.append(word)
-
-    if word[-1] in stoppunct:
-        stopwords.append(word)
-
-    if word[-2:] in stopquote:
-        stopwords.append(word)
-
+        nextWordDict[word] = [wordList[i + 1]]
 
 # TODO: construct 5 random sentences
 # Your code here
-def gibberish(n):
+def beginsWithStartWord(s):
+    firstLetter = s[1] if (s[0] == '\"' and len(s) > 1) else s[0]
+    return firstLetter.isupper()
 
-    for i in range(n):
-        sentence = []
-        sentence.append(random.choice(startwords))
+def endsWithStopWord(s):
+    lastLetter = s[-2] if (s[-1] == '\"' and len(s) > 1) else s[-1]
+    return lastLetter in [".", "!", "?"]
 
-        while sentence[-1] not in stopwords:
-            sentence.append(random.choice(this_that[sentence[-1]]))
+def printRandomSentences(numberOfSentences):
+    print("\n")
+    for _ in range(numberOfSentences):
 
-        sentence = " ".join(sentence)
-        print(sentence)
+        # Get a random 'start word'
+        word = random.choice(wordList)
+        while not beginsWithStartWord(word):
+            word = random.choice(wordList)
+        sentence = word
 
-gibberish(5)
+        # Add random words until a 'stop word' is found
+        word = random.choice(nextWordDict[word])
+        sentence += " " + word
+        while not endsWithStopWord(word):
+            word = random.choice(nextWordDict[word])
+            sentence += " " + word
+
+        # Make sure any quotation mark punctuations are paired up (opening and closing marks)
+        if sentence.count('\"') % 2 != 0:
+            if sentence[-1] == '\"':
+                sentence = sentence[:-1]
+            else:
+                sentence += '\"'
+
+        print(f"{sentence}\n")
+
+printRandomSentences(5) 
